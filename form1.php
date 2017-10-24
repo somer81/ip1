@@ -1,93 +1,132 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title> Form İşlemleri </title>
+	<meta charset="utf-8">
+	<title></title>
+
+<style type="text/css">
+	
+	.hata {
+		font-size: 0.8 em;
+		font-weight: bold;
+		color : #FF0000;
+
+	}
+
+</style>
+
 </head>
 <body>
 
+        <?php if(@$_SERVER["REQUEST_METHOD"] == "POST")
+    {
+    	$ad = $email = $yorum = $cins = $web = "" ;
+    	$adh = $emailh = $cinsh = $webh = "" ;
 
-<?php
-// define variables and set to empty values
+        function kontrol($veri)
+        {
+        	$veri = trim($veri);
+        	$veri = stripslashes($veri);
+        	$veri = htmlspecialchars($veri);
 
- $adErr = $emailErr = $cinsErr = $websiteErr = "";
-   $ad = $email = $cins = $yorum= $website = "";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-
-  function veriKontrol($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
-  $data = htmlspecialchars($data);
-  return $data;
-}
+        	return $veri;
+        }
 
 
-
-  if (empty($_POST["ad"])) {
-    $adErr = "Ad alanı zorunlu";
-  } else {
-    $ad = veriKontrol($_POST["ad"]);
-  }
-
-  if (empty($_POST["email"])) {
-    $emailErr = "Email alanı zorunlu";
-  } else {
-    $email = veriKontrol($_POST["email"]);
-  }
-
-  if (empty($_POST["website"])) {
-    $website = "";
-  } else {
-    $website = veriKontrol($_POST["website"]);
-  }
-
-  if (empty($_POST["yorum"])) {
-    $yorum = "";
-  } else {
-    $yorum = veriKontrol($_POST["yorum"]);
-  }
-
-  if (empty($_POST["cins"])) {
-    $cinsErr = "Cinsiyet Alanı zorunlu";
-  } else {
-    $cins = veriKontrol($_POST["cins"]);
-  }
+        if(empty($_POST['ad']))
+        {
+        	$adh = "Bu alan boş geçilemez";
+        }
+        else {
+        	$ad = kontrol($_POST['ad']);
+        	if (!preg_match("/^[a-zA-Z ]*$/",$ad)) 
+      $adh = "Sadece  hatf ve boşluk karakteri içerebilir"; 
+        
+        }
 
 
+       if(empty($_POST['email']))
+        {
+        	$emailh = "Bu alan boş geçilemez";
+        }
+        else {
+        	$email = kontrol($_POST['email']);
+        	if (!filter_var($email,FILTER_VALIDATE_EMAIL)) 
+      $emailh = "Geçersiz bir eposta girdiniz"; 
+        
+        }
 
- 
-}
+        if(empty($_POST['web']))
+        {
+        	$webh = "Bu alan boş geçilemez";
+        }
+        else {
+        	$web = kontrol($_POST['web']);
+        	if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i",$web)) $webh = "Geçersiz URL";
+        
+        }
 
-  
-  	
-?>
+        if(empty($_POST['yorum']))
+        {
+        	$yorumh = "";
+        }
+        else {
+        	$yorum = kontrol($_POST['yorum']);
+        }
 
 
+        if(empty($_POST['cins']))
+        {
+        	$cinsh = "Bu alan boş geçilemez";
+        }
+        else {
+        	$cins = kontrol($_POST['cins']);
+        }
 
-	<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+       // echo $ad , " " , $web , " " , $email, " " , $cins ; 
 		
-Ad: <input type="text" name="ad"> <span> <font color="red"> * <?php echo $adErr; ?> </font></span> <br/>
-E-mail: <input type="text" name="email"> <span> <font color="red"> * <?php echo $emailErr; ?> </font></span> <br/>
-Website: <input type="text" name="website"> <span> <?php echo $websiteErr; ?> </span> <br/>
-Yorum: <textarea name="yorum" rows="5" cols="40"></textarea> <br/>
-
-Cinsiyet:
-<input type="radio" name="cins" value="kadin">Kadın
-<input type="radio" name="cins" value="erkek">Erkek  
-<span>  <font color="red"> * <?php echo     $cinsErr; ?> </font></span> <br/>
+		// (echo $adh , " " , $webh , " " , $emailh ;       
 
 
-	<input type="submit" name="" value="Gönder"><br/>
-	</form>
+    }
+    
+    		?>
 
-<?php 
+		<h2> Kişi Kayıt </h2>
+		<form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST"> 
+	     Ad: <input type="text" name="ad" value="<?php echo @$ad ?>"><span class="hata"> <?php echo @$adh ?> </span><br><br>
+	     Email: <input type="text" name="email" value="<?php echo 
+	     @$email ?>"> 
 
- echo $ad . " <br> "  . $email  . " <br>" . $cins . " <br>" .  $yorum  .
-   "<br> " . $website  ;
+	     <span class="hata"> <?php echo @$emailh ?> </span>
+	     <br><br>
+	     Web: <input type="text" name="web" value="<?php echo @$web ?>"> 
+	     <span class="hata"> <?php echo @$webh ?> </span><br><br>
+	     Yorum: <textarea name = "yorum" columns= 20 rows="5"> 
+	      <?php echo @$yorum ?>
+	     </textarea> <br><br>
 
-   ?>
+	     Cinsiyet: <input type="radio" name="cins" value="bay"> Erkek
+	     		   <input type="radio" name="cins" value="bayan"> Kadın
 
+	     <span class="hata"> <?php echo @$cinsh ?></span><br><br>
+
+	     <input type="submit" name="submit" value="Gönder">
+
+		</form>
+
+		
+
+		<?php 
+
+
+			echo @$ad . "<br>";
+			echo @$email . "<br>";
+			echo @$web . "<br>";
+			echo @$yorum . "<br>";
+			echo @$cins . "<br>";
+
+		?>
 
 </body>
 </html>
